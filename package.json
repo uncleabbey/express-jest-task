@@ -1,0 +1,36 @@
+{
+  "name": "17",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [
+    "node",
+    "express",
+    "unit test"
+  ],
+  "author": "http://uncleabbey.github.io/",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.5.1",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
+  },
+  "scripts": {
+    "dev": "nodemon src/server",
+    "db:migrate": "node src/db/migrate",
+    "db:unmigrate": "node src/db/unmigrate",
+    "db:seed": "node src/db/seedTable",
+    "db:refresh": "npm run db:unmigrate && npm run db:migrate && npm run db:seed",
+    "testing": "jest --detectOpenHandles",
+    "test": "npm run db:refresh && npm run testing && process.exit"
+  }
+}
