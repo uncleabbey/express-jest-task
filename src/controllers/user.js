@@ -56,7 +56,7 @@ const loginUserCtrl = async (req, res, next) => {
       if (!validPassword) {
         return next({
           status: 400,
-          error: "Invalid email or Password",
+          error: "Invalid Username or Password",
         });
       }
       const token = sign(
@@ -71,7 +71,7 @@ const loginUserCtrl = async (req, res, next) => {
     }
     return next({
       status: 400,
-      error: "Invalid username or password",
+      error: "Invalid Username or Password",
     });
   } catch (error) {
     return next({
@@ -101,7 +101,7 @@ const getUser = async (req, res, next) => {
     const result = await db.query(findUserByIdQuery, [id]);
     if (result.rows.length === 1) {
       return res.status(200).json({
-        users: result.rows[0],
+        user: result.rows[0],
       });
     }
     return next({
@@ -150,7 +150,7 @@ const deleteUser = async (req, res, next) => {
       });
     }
     const result = await db.query(deleteUserQuery, [id]);
-    return res.status(204).json({
+    return res.status(200).json({
       message: "user deleted successfully",
     });
   } catch (error) {

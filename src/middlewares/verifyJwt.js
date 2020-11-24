@@ -12,7 +12,7 @@ const stripBearerToken = (token) => {
   return stripedToken;
 };
 
-const verifyUser = async (req, res, next) => {
+const isOwnerOrAdmin = async (req, res, next) => {
   const token = req.header("Authorization");
   if (!token) {
     return next({
@@ -28,17 +28,17 @@ const verifyUser = async (req, res, next) => {
       const user = result.rows[0];
       const { id } = req.params;
       if (user.isadmin) {
+        req.user = user;
+        return next();
+      }
+      if (user.id === Number(id)) {
         req.user = decoded;
         return next();
       }
-      if (user.id !== id) {
-        return next({
-          status: 401,
-          error: "sorry Only owner can perform this operation",
-        });
-      }
-      req.user = decoded;
-      return next();
+      return next({
+            status: 401,
+            error: "sorry Only owner or admin can perform this operation",
+          });
     }
     return next({
       status: 404,
@@ -52,15 +52,39 @@ const verifyUser = async (req, res, next) => {
   }
 };
 
-const verifyAdmin = (req, res, next) => {
-  const { isAdmin } = req.user;
-  if (isAdmin) {
-    return next();
+const isAdmin = async (req, res, next) => {
+  const token = req.header("Authorization");
+  if (!token) {
+    return next({
+      status: 401,
+      error: "Access Denied: No token provided...",
+    });
   }
-  return res.status(401).json({
-    status: "error",
-    error: "Sorry Only Admin can perform this action",
-  });
+    try {
+          const strippedToken = stripBearerToken(token);
+    const decoded = verify(strippedToken, process.env.SEC_KEY);
+    const result = await db.query(findUserByIdQuery, [decoded.id]);
+    if (result.rows.length === 1) {
+      const user = result.rows[0];
+      if (user.isadmin) {
+        req.user = decoded;
+        return next();
+      }
+      return res.status(401).json({
+      status: "error",
+      error: "Sorry Only Admin can perform this action",
+      });
+    }
+    return next({
+      status: 404,
+      error: "User not found",
+    });
+    } catch (error) {
+      return next({
+      status: 400,
+      error: "Invalid token....",
+    });
+    }
 };
 
-module.exports = { verifyUser, verifyAdmin };
+module.exports = { isOwnerOrAdmin, isAdmin };

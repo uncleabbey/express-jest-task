@@ -12,18 +12,20 @@ const {
   editUser,
   deleteUser,
 } = require("../controllers");
-const { verifyUser, verifyAdmin } = require("../middlewares/verifyJwt");
+const { isAdmin, isOwnerOrAdmin } = require("../middlewares/verifyJwt");
+
+
 const router = new express.Router();
 
 router.route("/login").post(validateLoginInput, loginUserCtrl);
 router
   .route("/")
-  .get(verifyUser, verifyAdmin, getAllUsers)
+  .get(isAdmin, getAllUsers)
   .post(validateInput, registerUserCtrl);
 router
   .route("/:id")
-  .get(verifyUser, getUser)
-  .patch(validateLoginInput, editUser)
-  .delete(verifyUser, deleteUser);
+  .get(isOwnerOrAdmin, getUser)
+  .patch(validateLoginInput, isOwnerOrAdmin, editUser)
+  .delete(isOwnerOrAdmin, deleteUser);
 
 module.exports = router;

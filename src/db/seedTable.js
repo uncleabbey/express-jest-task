@@ -19,6 +19,16 @@ const testUsers = [
     password: "12345678",
     isAdmin: false,
   },
+  {
+    username: "fireboy",
+    password: "12345678",
+    isAdmin: false,
+  },
+  {
+    username: "rema",
+    password: "12345678",
+    isAdmin: false,
+  },
 ];
 
 const addUser = async (username, password, isAdmin) => {
