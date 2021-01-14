@@ -13,6 +13,12 @@ const hashString = require("../helper/hashString");
 
 const registerUserCtrl = async (req, res, next) => {
   const { username, password, isAdmin } = req.body;
+  if(!username || username.length <= 3 || !password || username.length <= 6 || !isAdmin){
+     return next({
+      status: 400,
+      error: "All fields are required",
+    });
+     }
   try {
     const findUser = await db.query(findUserQuery, [username]);
     if (findUser.rows.length === 0) {
